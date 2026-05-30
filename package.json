@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.ts"
+    "dev": "nodemon --exec tsx server.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "^25.9.1"
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.3"
   }
 }

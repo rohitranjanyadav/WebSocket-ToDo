@@ -12,7 +12,7 @@ function startServer() {
     console.log(`Server started at PORT:${port}`);
   });
 
-  const io = new Server(server);
+  io = new Server(server);
 
   // io.on("connection", (socket) => {
   //   socket.on("hello", (data) => {
@@ -26,10 +26,12 @@ function startServer() {
 }
 
 function getSocketIo() {
-  if (!io) throw new Error("SocketIo not initialized");
+  if (!io) {
+    throw new Error("SocketIo not initialized");
+  }
 
   return io;
 }
 
 startServer();
-export {getSocketIo}
+export { getSocketIo };
