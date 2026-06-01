@@ -14,6 +14,7 @@ class Todo {
       socket.on("updateTodoStatus", (data) =>
         this.handleUpdateTodoStatus(socket, data),
       );
+      socket.on("fetchTodos", () => this.getPendingTodos(socket));
     });
   }
 
@@ -26,12 +27,7 @@ class Todo {
         deadLine,
         status,
       });
-      const todos = await todoModel.find({ status: Status.Pending });
-
-      socket.emit("todos_updated", {
-        status: "success",
-        data: todos,
-      });
+      await this.sendTodos(socket);
     } catch (error) {
       socket.emit("todo_response", {
         status: "error",
@@ -52,12 +48,7 @@ class Todo {
         });
         return;
       }
-      const todos = await todoModel.find({ status: Status.Pending });
-
-      socket.emit("todos_updated", {
-        status: "success",
-        data: todos,
-      });
+      await this.sendTodos(socket);
     } catch (error) {
       socket.emit("todo_response", {
         status: error,
@@ -81,17 +72,39 @@ class Todo {
         return;
       }
 
-      const todos = await todoModel.find({ status: Status.Pending });
-      socket.emit("todos_updated", {
-        status: "success",
-        data: todos,
-      });
+      await this.sendTodos(socket);
     } catch (error) {
       socket.emit("todo_response", {
         status: "error",
         error,
       });
     }
+  }
+
+  private async getPendingTodos(socket: Socket) {
+    try {
+      await this.sendTodos(socket);
+    } catch (error) {
+      socket.emit("todo_response", {
+        status: "error",
+        error,
+      });
+    }
+  }
+
+  private async sendTodos(socket: Socket) {
+    const [pendingTodos, completedTodos] = await Promise.all([
+      todoModel.find({ status: Status.Pending }),
+      todoModel.find({ status: Status.Completed }),
+    ]);
+
+    socket.emit("todos_updated", {
+      status: "success",
+      data: {
+        pending: pendingTodos,
+        completed: completedTodos,
+      },
+    });
   }
 }
 

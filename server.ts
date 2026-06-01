@@ -5,14 +5,15 @@ import { Server } from "socket.io";
 
 let io: Server | undefined;
 
-function startServer() {
-  connectToDB();
+async function startServer() {
+  await connectToDB();
   const port = envConfig.port || 4000;
   const server = app.listen(port, () => {
     console.log(`Server started at PORT:${port}`);
   });
 
   io = new Server(server);
+  await import("./src/todo/todoController.ts");
 
   // io.on("connection", (socket) => {
   //   socket.on("hello", (data) => {
